@@ -36,6 +36,34 @@ if (dialect === "postgres" || dialect === "postgresql") {
       port: process.env.DB_PORT,
     },
   );
+<<<<<<< HEAD
+=======
+} else if (dialect === "mssql" || dialect === "sqlserver") {
+  // SQL Server is accessed through the `tedious` driver. For a local SQL
+  // Server Express installation, set DB_INSTANCE=SQLEXPRESS and leave
+  // DB_PORT empty: SQL Server Browser resolves the instance port for us.
+  const instanceName = process.env.DB_INSTANCE;
+  const port = process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined;
+
+  sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASS,
+    {
+      host: process.env.DB_HOST || "localhost",
+      dialect: "mssql",
+      port,
+      logging,
+      dialectOptions: {
+        options: {
+          encrypt: process.env.DB_ENCRYPT === "true",
+          trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE !== "false",
+          ...(instanceName ? { instanceName } : {}),
+        },
+      },
+    },
+  );
+>>>>>>> 6996f48 (Initial commit - Phuoc Store)
 } else {
   throw new Error(`Unsupported DB_DIALECT: ${dialect}`);
 }

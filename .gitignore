@@ -15,3 +15,7 @@ npm-debug.log*
 
 .vercel
 .env*
+<<<<<<< HEAD
+=======
+!.env.sqlserver.example
+>>>>>>> 6996f48 (Initial commit - Phuoc Store)

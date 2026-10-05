@@ -111,3 +111,36 @@ npm run dev             Start the server with Nodemon
 ```
 
 The project currently does not define an `npm start` script.
+<<<<<<< HEAD
+=======
+
+## SQL Server / SSMS (local SQL Server Express)
+
+SSMS is the management application; the actual database service is Microsoft
+SQL Server. This project can use SQL Server after installing the `tedious`
+driver. The repository includes `.env.sqlserver.example` with the connection
+settings for a local `SQLEXPRESS` instance.
+
+1. In SSMS, connect to `localhost\\SQLEXPRESS` using Windows Authentication.
+2. Create a SQL Server login and database user (replace the example password
+   before executing):
+
+   ```sql
+   CREATE LOGIN ecommerce_app WITH PASSWORD = 'Use-A-Long-Unique-Password!';
+   GO
+   CREATE DATABASE warehouses_db;
+   GO
+   USE warehouses_db;
+   GO
+   CREATE USER ecommerce_app FOR LOGIN ecommerce_app;
+   ALTER ROLE db_owner ADD MEMBER ecommerce_app;
+   GO
+   ```
+
+3. Copy the variables from `.env.sqlserver.example` into `.env`, use the same
+   password in `DB_PASS`, then run `npm.cmd run dev` from PowerShell.
+
+On first startup Sequelize creates the tables and the application seeders add
+the default accounts, categories, and products. Do not run the SQL files in
+`backup/` in SSMS: they are MySQL exports, not SQL Server scripts.
+>>>>>>> 6996f48 (Initial commit - Phuoc Store)

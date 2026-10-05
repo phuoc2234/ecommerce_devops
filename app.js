@@ -57,7 +57,11 @@ function initializeDatabase() {
       if (process.env.VERCEL) {
         await sequelize.authenticate();
       } else {
+<<<<<<< HEAD
         await sequelize.sync({ alter: true });
+=======
+        await sequelize.sync();
+>>>>>>> 6996f48 (Initial commit - Phuoc Store)
       }
       await sessionStore.sync();
 
