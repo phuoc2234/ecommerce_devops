@@ -62,12 +62,7 @@ function initializeDatabase() {
       }
       await sessionStore.sync();
 
-      if (
-        process.env.NODE_ENV !== "production" ||
-        process.env.SEED_DEFAULT_ACCOUNTS === "true"
-      ) {
-        await createDefaultAccounts();
-      }
+      await createDefaultAccounts();
       await seedProductsAndCategories();
     })().catch((error) => {
       databaseInitialization = undefined;
