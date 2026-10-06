@@ -1,53 +1,118 @@
-# Optional Docker Compose deployment for a self-hosted VPS.
-# Vercel does not use this file; configure the app and database in Vercel instead.
-# For Docker deployments, provide a .env file and set DOCKERHUB_USER and IMAGE_TAG.
+# # Optional Docker Compose deployment for a self-hosted VPS.
+# # Vercel does not use this file; configure the app and database in Vercel instead.
+# # For Docker deployments, provide a .env file and set DOCKERHUB_USER and IMAGE_TAG.
+
+# services:
+#   db:
+#     image: mysql:8.4
+#     container_name: ecommerce-db
+#     restart: unless-stopped
+#     environment:
+#       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+#       MYSQL_DATABASE: ${DB_NAME}
+#       MYSQL_USER: ${DB_USER}
+#       MYSQL_PASSWORD: ${DB_PASS}
+#     volumes:
+#       - db_data:/var/lib/mysql # dữ liệu DB nằm ngoài container -> deploy không mất data
+#     healthcheck:
+#       test:
+#         [
+#           "CMD-SHELL",
+#           "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent",
+#         ]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 12
+#       start_period: 30s
+#     # KHÔNG publish port 3306 -> DB chỉ app trong cùng network truy cập được
+
+#   app:
+#     image: docker.io/${DOCKERHUB_USER}/ecommerce-app:${IMAGE_TAG:-latest}
+#     container_name: ecommerce-app
+#     restart: unless-stopped
+#     depends_on:
+#       db:
+#         condition: service_healthy # đợi MySQL sẵn sàng rồi mới chạy app
+#     environment:
+#       NODE_ENV: production
+#       PORT: 3000
+#       DB_HOST: db # tên service = hostname trong network của compose
+#       DB_PORT: 3306 # MySQL listens on 3306 inside the Compose network
+#       DB_DIALECT: mysql
+#       DB_NAME: ${DB_NAME}
+#       DB_USER: ${DB_USER}
+#       DB_PASS: ${DB_PASS}
+#       SESSION_SECRET: ${SESSION_SECRET}
+#     ports:
+#       - "80:3000" # host(VPS):container
+#     volumes:
+#       - uploads:/app/public/uploads/products # ảnh admin upload không mất khi deploy
+
+# volumes:
+#   db_data:
+#   uploads:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+version: '3.9'
 
 services:
   db:
-    image: mysql:8.4
-    container_name: ecommerce-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ecommerce-mssql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASS}
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${DB_PASS}" 
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433" # Port để SSMS kết nối vào
     volumes:
-      - db_data:/var/lib/mysql # dữ liệu DB nằm ngoài container -> deploy không mất data
+      - mssql_data:/var/opt/mssql
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent",
-        ]
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-U", "sa", "-P", "${DB_PASS}", "-Q", "SELECT 1"]
       interval: 10s
       timeout: 5s
-      retries: 12
+      retries: 10
       start_period: 30s
-    # KHÔNG publish port 3306 -> DB chỉ app trong cùng network truy cập được
 
   app:
-    image: docker.io/${DOCKERHUB_USER}/ecommerce-app:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: ecommerce-app
     restart: unless-stopped
     depends_on:
       db:
-        condition: service_healthy # đợi MySQL sẵn sàng rồi mới chạy app
+        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 3000
-      DB_HOST: db # tên service = hostname trong network của compose
-      DB_PORT: 3306 # MySQL listens on 3306 inside the Compose network
-      DB_DIALECT: mysql
+      DB_HOST: db
+      DB_PORT: 1433
+      DB_DIALECT: mssql
       DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
+      DB_USER: sa
       DB_PASS: ${DB_PASS}
       SESSION_SECRET: ${SESSION_SECRET}
     ports:
-      - "80:3000" # host(VPS):container
+      - "80:3000"
     volumes:
-      - uploads:/app/public/uploads/products # ảnh admin upload không mất khi deploy
+      - uploads:/app/public/uploads/products
 
 volumes:
-  db_data:
+  mssql_data:
   uploads:

@@ -1,0 +1,43 @@
+name: Deploy E-Commerce to EC2
+
+on:
+  push:
+    branches: [ "main", "master" ] # Chạy khi push code lên nhánh main hoặc master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Bắn toàn bộ source code từ GitHub sang máy chủ EC2
+      - name: Copy source code to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "~/ecommerce"
+
+      # Truy cập vào EC2, tạo file biến môi trường và chạy Docker
+      - name: Execute Docker Compose on EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/ecommerce
+            
+            # Tạo file .env chứa thông tin kết nối DB (lấy từ GitHub Secrets)
+            echo "DB_NAME=${{ secrets.DB_NAME }}" > .env
+            echo "DB_PASS=${{ secrets.DB_PASS }}" >> .env
+            echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
+            
+            # Build và chạy lại ứng dụng
+            docker compose -f docker-compose.prod.yml up -d --build
+            
+            # Dọn dẹp rác Docker thừa để tránh đầy ổ cứng
+            docker image prune -f
