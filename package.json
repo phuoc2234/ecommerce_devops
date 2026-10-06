@@ -26,12 +26,8 @@
     "nodemon": "^3.1.9",
     "pg": "^8.23.1",
     "sequelize": "^6.37.5",
-<<<<<<< HEAD
-    "swagger-ui-express": "^5.0.1"
-=======
     "swagger-ui-express": "^5.0.1",
     "tedious": "^20.3.3"
->>>>>>> 6996f48 (Initial commit - Phuoc Store)
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.2"
