@@ -36,8 +36,6 @@ if (dialect === "postgres" || dialect === "postgresql") {
       port: process.env.DB_PORT,
     },
   );
-<<<<<<< HEAD
-=======
 } else if (dialect === "mssql" || dialect === "sqlserver") {
   // SQL Server is accessed through the `tedious` driver. For a local SQL
   // Server Express installation, set DB_INSTANCE=SQLEXPRESS and leave
@@ -63,7 +61,6 @@ if (dialect === "postgres" || dialect === "postgresql") {
       },
     },
   );
->>>>>>> 6996f48 (Initial commit - Phuoc Store)
 } else {
   throw new Error(`Unsupported DB_DIALECT: ${dialect}`);
 }
