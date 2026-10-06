@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Sequelize = require("sequelize");
+require('tedious'); // Bắt buộc Vercel phải đóng gói thư viện này
 
 const dialect = (process.env.DB_DIALECT || "mysql").toLowerCase();
 const logging =
