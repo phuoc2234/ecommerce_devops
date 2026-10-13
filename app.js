@@ -55,11 +55,7 @@ let databaseInitialization;
 function initializeDatabase() {
   if (!databaseInitialization) {
     databaseInitialization = (async () => {
-      if (process.env.VERCEL) {
-        await sequelize.sync();
-      } else {
-        await sequelize.sync({ alter: true });
-      }
+      await sequelize.sync();
       await sessionStore.sync();
 
       await createDefaultAccounts();
