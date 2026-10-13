@@ -271,7 +271,7 @@
       <% categories.forEach(function(category) { %>
         <div class="category-carousel-item mb-2">
           <div class="card">
-            <img src="<%= category.image || '/images/default-category.jpg' %>" class="card-img-top"
+            <img src="<%= category.image || ('/images/category-' + category.id + '.jpg') %>" class="card-img-top"
               alt="<%= category.name %>" />
             <div class="card-body text-center">
               <h5 class="card-title">
