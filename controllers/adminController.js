@@ -59,8 +59,12 @@ exports.login = async (req, res) => {
 
 // Đăng xuất
 exports.logout = (req, res) => {
-  req.session.destroy();
-  res.redirect("/admin/login");
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+    }
+    res.redirect("/login");
+  });
 };
 
 // Trang dashboard
