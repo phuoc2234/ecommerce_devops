@@ -1,0 +1,26 @@
+name: Deploy to EC2 via PM2
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to AWS EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/projects/ecommerce_devops
+            git stash
+            git pull origin main
+            npm install --production
+            pm2 restart ecommerce-backend
+            pm2 save
+            echo "Deploy completed successfully!"
