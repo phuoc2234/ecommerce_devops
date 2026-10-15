@@ -36,6 +36,12 @@
               Orders
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/users">
+              <i class="fas fa-users me-2"></i>
+              Users
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -67,49 +73,59 @@
 
       <!-- Statistics Cards -->
       <div class="container mt-4">
-        <div class="row g-4">
-          <div class="col-lg-3 col-md-6">
-            <div class="card border-start-primary shadow-lg p-3">
+        <div class="row g-3">
+          <div class="col-lg col-md-6">
+            <div class="card border-start border-primary border-4 shadow-sm p-3 h-100">
               <div class="card-body">
                 <h6 class="text-primary text-uppercase fw-bold">
                   Total Products
                 </h6>
-                <h4 class="fw-bold text-dark">250</h4>
-                <i class="fas fa-box fa-2x text-gray-300"></i>
+                <h4 class="fw-bold text-dark"><%= totalProducts %></h4>
+                <i class="fas fa-box fa-2x text-muted"></i>
               </div>
             </div>
           </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="card border-start-success shadow-lg p-3">
+          <div class="col-lg col-md-6">
+            <div class="card border-start border-success border-4 shadow-sm p-3 h-100">
               <div class="card-body">
                 <h6 class="text-success text-uppercase fw-bold">
                   Total Orders
                 </h6>
-                <h4 class="fw-bold text-dark">150</h4>
-                <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                <h4 class="fw-bold text-dark"><%= totalOrders %></h4>
+                <i class="fas fa-shopping-cart fa-2x text-muted"></i>
               </div>
             </div>
           </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="card border-start-info shadow-lg p-3">
+          <div class="col-lg col-md-6">
+            <div class="card border-start border-info border-4 shadow-sm p-3 h-100">
               <div class="card-body">
                 <h6 class="text-info text-uppercase fw-bold">Categories</h6>
-                <h4 class="fw-bold text-dark">15</h4>
-                <i class="fas fa-tags fa-2x text-gray-300"></i>
+                <h4 class="fw-bold text-dark"><%= totalCategories %></h4>
+                <i class="fas fa-tags fa-2x text-muted"></i>
               </div>
             </div>
           </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="card border-start-warning shadow-lg p-3">
+          <div class="col-lg col-md-6">
+            <div class="card border-start border-secondary border-4 shadow-sm p-3 h-100">
+              <div class="card-body">
+                <h6 class="text-secondary text-uppercase fw-bold">Total Users</h6>
+                <h4 class="fw-bold text-dark"><%= totalUsers %></h4>
+                <i class="fas fa-users fa-2x text-muted"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg col-md-6">
+            <div class="card border-start border-warning border-4 shadow-sm p-3 h-100">
               <div class="card-body">
                 <h6 class="text-warning text-uppercase fw-bold">
-                  Low Stock Items
+                  Low Stock
                 </h6>
-                <h4 class="fw-bold text-dark">18</h4>
-                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                <h4 class="fw-bold text-dark"><%= lowStockItems %></h4>
+                <i class="fas fa-exclamation-triangle fa-2x text-muted"></i>
               </div>
             </div>
           </div>

@@ -71,6 +71,12 @@ router.get("/products", isAdmin, adminController.getProducts);
 // Quản lý tồn kho
 router.get("/inventory", isAdmin, adminController.getInventory);
 
+// Quản lý người dùng (Users)
+router.get("/users", isAdmin, adminController.getUsers);
+router.post("/users", isAdmin, adminController.createUser);
+router.put("/users/:id", isAdmin, adminController.updateUser);
+router.delete("/users/:id", isAdmin, adminController.deleteUser);
+
 // Orders management
 router.get("/orders", isAdmin, async (req, res) => {
   try {

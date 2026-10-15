@@ -1,0 +1,261 @@
+<%- include('./partials/header') %>
+
+<div class="container-fluid mt-4">
+  <!-- Tiêu đề và nút thêm người dùng -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people-fill text-primary"></i> Quản lý Người dùng</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+      <i class="bi bi-person-plus-fill me-1"></i> Thêm Người dùng Mới
+    </button>
+  </div>
+
+  <!-- Thông báo thành công hoặc lỗi -->
+  <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i> <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- Thanh tìm kiếm và bộ lọc -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form action="/admin/users" method="GET" class="row g-3">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              name="search"
+              placeholder="Tìm theo tên, email hoặc username..."
+              value="<%= typeof search !== 'undefined' ? search : '' %>"
+            />
+          </div>
+        </div>
+        <div class="col-md-4">
+          <select class="form-select" name="role" onchange="this.form.submit()">
+            <option value="">-- Tất cả vai trò --</option>
+            <option value="admin" <%= (typeof role !== 'undefined' && role === 'admin') ? 'selected' : '' %>>Quản trị viên (Admin)</option>
+            <option value="user" <%= (typeof role !== 'undefined' && role === 'user') ? 'selected' : '' %>>Khách hàng (User)</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-fill">Tìm kiếm</button>
+          <a href="/admin/users" class="btn btn-outline-secondary">Đặt lại</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Danh sách bảng người dùng -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">Danh sách Người dùng (<%= users.length %>)</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th style="width: 60px;">ID</th>
+              <th>Họ và Tên</th>
+              <th>Email</th>
+              <th>Tên đăng nhập</th>
+              <th>Vai trò</th>
+              <th>Ngày tham gia</th>
+              <th style="width: 160px;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (users.length === 0) { %>
+              <tr>
+                <td colspan="7" class="text-center py-4 text-muted">
+                  <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                  Không tìm thấy người dùng nào phù hợp.
+                </td>
+              </tr>
+            <% } else { %>
+              <% users.forEach(function(u) { %>
+                <tr>
+                  <td><strong>#<%= u.id %></strong></td>
+                  <td>
+                    <div class="fw-semibold"><%= u.name %></div>
+                    <% if (typeof user !== 'undefined' && user && user.id === u.id) { %>
+                      <span class="badge bg-info text-dark">Tài khoản của bạn</span>
+                    <% } %>
+                  </td>
+                  <td><%= u.email %></td>
+                  <td><code><%= u.username || 'N/A' %></code></td>
+                  <td>
+                    <% if (u.role === 'admin') { %>
+                      <span class="badge bg-danger"><i class="bi bi-shield-lock-fill me-1"></i> Admin</span>
+                    <% } else { %>
+                      <span class="badge bg-success"><i class="bi bi-person-fill me-1"></i> User</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <%= new Date(u.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-sm btn-outline-primary me-1"
+                      onclick="editUser('<%= u.id %>', '<%= u.name %>', '<%= u.email %>', '<%= u.username || '' %>', '<%= u.role %>')"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editUserModal"
+                      title="Chỉnh sửa"
+                    >
+                      <i class="bi bi-pencil-square"></i> Sửa
+                    </button>
+                    <% if (typeof user !== 'undefined' && user && user.id === u.id) { %>
+                      <button class="btn btn-sm btn-outline-secondary" disabled title="Không thể xóa tài khoản của chính mình">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    <% } else { %>
+                      <button
+                        class="btn btn-sm btn-outline-danger"
+                        onclick="deleteUser('<%= u.id %>', '<%= u.name %>')"
+                        title="Xóa người dùng"
+                      >
+                        <i class="bi bi-trash"></i> Xóa
+                      </button>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Thêm Người dùng -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-person-plus-fill me-2"></i> Thêm Người dùng Mới</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="/admin/users" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Họ và Tên <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="name" placeholder="Nguyễn Văn A" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" name="email" placeholder="example@email.com" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tên đăng nhập (Username)</label>
+            <input type="text" class="form-control" name="username" placeholder="nguyenvana" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" name="password" minlength="6" placeholder="Tối thiểu 6 ký tự" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Vai trò (Role) <span class="text-danger">*</span></label>
+            <select class="form-select" name="role" required>
+              <option value="user" selected>Khách hàng (User)</option>
+              <option value="admin">Quản trị viên (Admin)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i> Thêm người dùng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Chỉnh sửa Người dùng -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title text-dark"><i class="bi bi-pencil-square me-2"></i> Chỉnh sửa Người dùng</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="editUserForm" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Họ và Tên <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="name" id="editUserName" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" name="email" id="editUserEmail" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tên đăng nhập (Username)</label>
+            <input type="text" class="form-control" name="username" id="editUserUsername" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Đổi Mật khẩu mới</label>
+            <input type="password" class="form-control" name="password" minlength="6" placeholder="Để trống nếu không muốn đổi mật khẩu" />
+            <small class="text-muted">Chỉ nhập khi bạn muốn đặt lại mật khẩu cho tài khoản này.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Vai trò (Role) <span class="text-danger">*</span></label>
+            <select class="form-select" name="role" id="editUserRole" required>
+              <option value="user">Khách hàng (User)</option>
+              <option value="admin">Quản trị viên (Admin)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-warning"><i class="bi bi-save me-1"></i> Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function editUser(id, name, email, username, role) {
+    document.getElementById("editUserName").value = name;
+    document.getElementById("editUserEmail").value = email;
+    document.getElementById("editUserUsername").value = username || "";
+    document.getElementById("editUserRole").value = role || "user";
+    document.getElementById("editUserForm").action = `/admin/users/${id}?_method=PUT`;
+  }
+
+  function deleteUser(id, name) {
+    if (confirm(`Bạn có chắc chắn muốn xóa người dùng "${name}" (ID: ${id}) không?\nHành động này không thể hoàn tác.`)) {
+      fetch(`/admin/users/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        if (res.ok) {
+          window.location.reload();
+        } else {
+          return res.json().then((data) => {
+            alert(data.message || "Lỗi khi xóa người dùng.");
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Lỗi kết nối máy chủ khi xóa người dùng.");
+      });
+    }
+  }
+</script>
+
+<%- include('./partials/footer') %>
